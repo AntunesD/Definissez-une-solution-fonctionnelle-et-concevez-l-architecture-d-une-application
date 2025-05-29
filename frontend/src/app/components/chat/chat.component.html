@@ -1,0 +1,127 @@
+<div class="chat-container">
+  <!-- Header -->
+  <mat-card class="header-card">
+    <mat-card-header>
+      <mat-card-title>Chat Support Client - Location de Véhicules</mat-card-title>
+      <div class="connection-status">
+        <mat-chip [color]="isConnected ? 'primary' : 'warn'" selected>
+          {{ isConnected ? 'Connecté' : 'Déconnecté' }}
+        </mat-chip>
+      </div>
+    </mat-card-header>
+  </mat-card>
+
+  <div class="main-content">
+    <!-- Sélecteur de rôle -->
+    <mat-card class="role-selector">
+      <mat-card-header>
+        <mat-card-title>Sélectionner votre rôle</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="role-buttons">
+          <button 
+            mat-raised-button 
+            [color]="userRole === 'client' ? 'primary' : ''"
+            (click)="setUserRole('client')"
+            class="role-button">
+            <mat-icon>person</mat-icon>
+            Client
+          </button>
+          <button 
+            mat-raised-button 
+            [color]="userRole === 'agent' ? 'primary' : ''"
+            (click)="setUserRole('agent')"
+            class="role-button">
+            <mat-icon>headset_mic</mat-icon>
+            Agent Support
+          </button>
+        </div>
+        <p class="role-info">
+          Vous êtes actuellement : <strong>{{ userRole === 'client' ? 'Client' : 'Agent Support' }}</strong>
+        </p>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Zone de chat -->
+    <mat-card class="chat-card">
+      <mat-card-header>
+        <mat-card-title>Chat en temps réel</mat-card-title>
+      </mat-card-header>
+      <mat-card-content class="chat-content">
+        <!-- Messages -->
+        <div class="messages-container" #messagesContainer>
+          <div *ngIf="messages.length === 0" class="no-messages">
+            Aucun message pour le moment. Commencez la conversation !
+          </div>
+          <div *ngFor="let message of messages" 
+               class="message-wrapper"
+               [ngClass]="{'sent': message.sender === userRole, 'received': message.sender !== userRole}">
+            <div class="message-bubble">
+              <div class="message-header">
+                <mat-icon class="sender-icon">
+                  {{ message.sender === 'client' ? 'person' : 'headset_mic' }}
+                </mat-icon>
+                <span class="sender-name">
+                  {{ message.sender === 'client' ? 'Client' : 'Agent' }}
+                </span>
+                <span class="message-time">{{ formatTime(message.timestamp) }}</span>
+              </div>
+              <p class="message-content">{{ message.content }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Zone de saisie -->
+        <div class="input-container">
+          <mat-form-field class="message-input" appearance="outline">
+            <mat-label>Tapez votre message en tant que {{ userRole === 'client' ? 'client' : 'agent' }}...</mat-label>
+            <input 
+              matInput 
+              [(ngModel)]="newMessage"
+              (keypress)="onKeyPress($event)"
+              [disabled]="!isConnected">
+          </mat-form-field>
+          <button 
+            mat-fab 
+            color="primary" 
+            (click)="sendMessage()"
+            [disabled]="!newMessage.trim() || !isConnected"
+            class="send-button">
+            <mat-icon>send</mat-icon>
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Instructions -->
+  <mat-card class="instructions-card">
+    <mat-card-header>
+      <mat-card-title>Instructions de test</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="instructions-grid">
+        <div class="instructions-column">
+          <h4>Pour tester la PoC :</h4>
+          <ol>
+            <li>Ouvrez cette page dans deux onglets différents</li>
+            <li>Dans le premier onglet, sélectionnez "Client"</li>
+            <li>Dans le second onglet, sélectionnez "Agent Support"</li>
+            <li>Envoyez des messages depuis chaque onglet</li>
+            <li>Observez la communication en temps réel</li>
+          </ol>
+        </div>
+        <div class="instructions-column">
+          <h4>Fonctionnalités :</h4>
+          <ul>
+            <li>Messages sauvegardés en base de données H2</li>
+            <li>Communication temps réel via WebSocket STOMP</li>
+            <li>Interface différenciée client/agent</li>
+            <li>Horodatage des messages</li>
+            <li>Auto-scroll vers les nouveaux messages</li>
+          </ul>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
