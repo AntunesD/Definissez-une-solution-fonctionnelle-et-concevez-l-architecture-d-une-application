@@ -5,7 +5,9 @@ CREATE TABLE utilisateur (
     email VARCHAR(255) NOT NULL UNIQUE,
     mot_de_passe_hash TEXT NOT NULL,
     nom VARCHAR(100),
-    adresse TEXT
+    adresse TEXT,
+    pays VARCHAR(100),
+    langue VARCHAR(100),
 );
 
 CREATE TABLE agence (
